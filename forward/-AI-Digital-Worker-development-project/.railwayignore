@@ -1,0 +1,10 @@
+node_modules
+.git
+.vscode
+.idea
+*.test.js
+*.spec.js
+__tests__
+.DS_Store
+coverage
+dist
