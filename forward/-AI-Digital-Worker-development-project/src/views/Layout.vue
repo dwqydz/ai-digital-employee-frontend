@@ -253,9 +253,15 @@ const menuRoutes = computed(() => {
 // ✅ 计算用户头像（优先显示上传的头像，否则显示首字母）
 const userAvatar = computed(() => {
   if (avatarUrl.value) {
-    // 如果已经是完整URL则直接使用，否则拼接后端地址
-    const url = avatarUrl.value.startsWith('http') ? avatarUrl.value : `http://localhost:8080${avatarUrl.value}`
-    return `${url}?t=${Date.now()}` // 加时间戳防止缓存
+    // 如果已经是完整URL则直接使用
+    if (avatarUrl.value.startsWith('http')) {
+      return `${avatarUrl.value}?t=${Date.now()}` // 加时间戳防止缓存
+    }
+    // 否则根据当前环境的 API 基础 URL 拼接
+    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'
+    // 移除末尾的 /api，然后拼接头像路径
+    const baseUrl = apiBaseUrl.replace(/\/api$/, '')
+    return `${baseUrl}${avatarUrl.value}?t=${Date.now()}`
   }
   const name = currentUsername.value
   if (!name) return 'U'
