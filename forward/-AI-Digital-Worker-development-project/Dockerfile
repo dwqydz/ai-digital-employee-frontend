@@ -26,14 +26,23 @@ RUN ls -la /app/dist && echo "Build successful!"
 # 生产阶段 - 使用 nginx 提供静态文件服务
 FROM nginx:alpine
 
+# 安装 envsubst 用于替换环境变量
+RUN apk add --no-cache gettext
+
 # 复制构建产物到 nginx
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# 从 builder 阶段复制 nginx 配置
-COPY --from=builder /app/nginx.conf /etc/nginx/conf.d/default.conf
+# 从 builder 阶段复制 nginx 配置模板
+COPY --from=builder /app/nginx.conf /etc/nginx/conf.d/default.conf.template
 
-# 暴露端口
-EXPOSE 80
+# 创建启动脚本，将 $PORT 替换到 nginx 配置中
+RUN echo '#!/bin/sh' > /docker-entrypoint.sh && \
+    echo 'envsubst "\${PORT}" < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf' >> /docker-entrypoint.sh && \
+    echo 'exec nginx -g "daemon off;"' >> /docker-entrypoint.sh && \
+    chmod +x /docker-entrypoint.sh
 
-# 启动 nginx
-CMD ["nginx", "-g", "daemon off;"]
+# 暴露端口（使用环境变量）
+EXPOSE ${PORT:-80}
+
+# 使用启动脚本
+CMD ["/docker-entrypoint.sh"]
