@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # 安装所有依赖（包括 devDependencies）
-RUN npm ci
+RUN npm install
 
 # 复制所有文件
 COPY . .
