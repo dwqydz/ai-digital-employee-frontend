@@ -3,7 +3,6 @@ node_modules
 .gitignore
 .vscode
 .idea
-*.md
 .env.local
 .DS_Store
 coverage
@@ -14,5 +13,4 @@ __tests__
 .railwayignore
 .nvmrc
 .npmrc
-RAILWAY_DEPLOY.md
-DOCKER_DEPLOY.md
+*.md
