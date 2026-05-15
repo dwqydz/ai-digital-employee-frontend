@@ -20,6 +20,8 @@ PORT=4173
 - `.nvmrc` - 指定 Node.js 18
 - `.npmrc` - npm 配置
 - `package.json` 中的 `engines` 字段
+- `nixpacks.toml` - Railway Nixpacks 构建配置（**最重要**）
+- `railway.json` - Railway 服务配置
 - `Dockerfile` - 备选部署方案
 
 ### 2. 构建配置
@@ -77,9 +79,12 @@ Access-Control-Allow-Origin: https://your-frontend-name.railway.app
 - 查看 Railway Logs 标签页的详细错误信息
 - 确认所有依赖都在 package.json 中声明
 - **如果看到 "npm: not found" 错误**：
-  - 确保已推送 `.nvmrc` 文件到 GitHub
+  - ✅ 已添加 `nixpacks.toml` 文件明确指定 Node.js 18
+  - ✅ 已添加 `railway.json` 配置文件
+  - 确保已推送所有新文件到 GitHub（包括 `.nvmrc`, `nixpacks.toml`, `railway.json`）
   - 检查 Railway Variables 中是否设置了 `NODE_VERSION=18`
-  - 尝试删除 Railway 服务并重新部署
+  - **重要**：删除当前的 Railway 服务，重新从 GitHub 创建新服务
+  - 如果仍然失败，Railway 会自动使用 `Dockerfile` 作为备选方案
 
 ### 7. 测试部署
 
