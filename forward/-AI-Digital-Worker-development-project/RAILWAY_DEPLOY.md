@@ -14,6 +14,14 @@ PORT=4173
 
 **重要**：`VITE_API_BASE_URL` 必须设置为你的后端服务地址
 
+### 1.1 Node.js 版本配置（已自动配置）
+
+项目已包含以下文件来确保 Railway 使用正确的 Node.js 版本：
+- `.nvmrc` - 指定 Node.js 18
+- `.npmrc` - npm 配置
+- `package.json` 中的 `engines` 字段
+- `Dockerfile` - 备选部署方案
+
 ### 2. 构建配置
 
 Railway 会自动检测并使用以下配置：
@@ -68,6 +76,10 @@ Access-Control-Allow-Origin: https://your-frontend-name.railway.app
 **问题：构建失败**
 - 查看 Railway Logs 标签页的详细错误信息
 - 确认所有依赖都在 package.json 中声明
+- **如果看到 "npm: not found" 错误**：
+  - 确保已推送 `.nvmrc` 文件到 GitHub
+  - 检查 Railway Variables 中是否设置了 `NODE_VERSION=18`
+  - 尝试删除 Railway 服务并重新部署
 
 ### 7. 测试部署
 
