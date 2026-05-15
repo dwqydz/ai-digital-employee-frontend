@@ -20,6 +20,9 @@ ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 # 构建应用
 RUN npm run build
 
+# 验证构建产物
+RUN ls -la /app/dist && echo "Build successful!"
+
 # 生产阶段 - 使用 nginx 提供静态文件服务
 FROM nginx:alpine
 
