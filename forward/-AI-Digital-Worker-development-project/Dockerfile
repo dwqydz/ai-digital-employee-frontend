@@ -13,6 +13,10 @@ RUN npm install
 # 复制所有文件
 COPY . .
 
+# 从环境变量获取 API URL（Railway 会在构建时注入）
+ARG VITE_API_BASE_URL
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+
 # 构建应用
 RUN npm run build
 
