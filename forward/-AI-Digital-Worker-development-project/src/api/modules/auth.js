@@ -77,6 +77,7 @@ export const uploadAvatar = (file) => {
   return api.post('/upload/avatar', formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
-    }
+    },
+    timeout: 120000  // 文件上传超时120秒
   })
 }
