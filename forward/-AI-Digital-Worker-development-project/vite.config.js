@@ -13,7 +13,17 @@ export default defineConfig({
   },
   server: {
     host: '0.0.0.0',
-    port: process.env.PORT || 4173
+    port: process.env.PORT || 4173,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
+      '/uploads': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      }
+    }
   },
   preview: {
     host: '0.0.0.0',

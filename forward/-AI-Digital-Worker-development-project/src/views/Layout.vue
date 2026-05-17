@@ -253,15 +253,9 @@ const menuRoutes = computed(() => {
 // ✅ 计算用户头像（优先显示上传的头像，否则显示首字母）
 const userAvatar = computed(() => {
   if (avatarUrl.value) {
-    // 如果已经是完整URL则直接使用
-    if (avatarUrl.value.startsWith('http')) {
-      return `${avatarUrl.value}?t=${Date.now()}` // 加时间戳防止缓存
-    }
-    // 否则根据当前环境的 API 基础 URL 拼接
-    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'
-    // 移除末尾的 /api，然后拼接头像路径
-    const baseUrl = apiBaseUrl.replace(/\/api$/, '')
-    return `${baseUrl}${avatarUrl.value}?t=${Date.now()}`
+    // 如果已经是完整URL则直接使用，否则拼接后端地址
+    const url = avatarUrl.value.startsWith('http') ? avatarUrl.value : `http://localhost:8080${avatarUrl.value}`
+    return `${url}?t=${Date.now()}` // 加时间戳防止缓存
   }
   const name = currentUsername.value
   if (!name) return 'U'
@@ -354,6 +348,8 @@ const handleAvatarChange = async (file) => {
       return
     }
 
+    console.log('[头像上传] 开始上传文件:', file.name, '大小:', file.size)
+
     const loading = ElLoading.service({
       lock: true,
       text: '正在上传头像...',
@@ -361,16 +357,24 @@ const handleAvatarChange = async (file) => {
     })
 
     const res = await uploadAvatar(file.raw)
+    console.log('[头像上传] 上传成功响应:', res)
+    
     if (res && res.avatar_url) {
       avatarUrl.value = res.avatar_url
       ElMessage.success('头像更新成功')
       // 重新获取用户信息以同步状态
       await fetchUserInfo()
+    } else {
+      console.error('[头像上传] 响应数据异常:', res)
+      ElMessage.error('上传失败：响应数据异常')
     }
     loading.close()
   } catch (error) {
-    console.error('头像上传失败:', error)
-    ElMessage.error('头像上传失败，请重试')
+    console.error('[头像上传] 失败:', error)
+    console.error('[头像上传] 错误详情:', error.response?.data)
+    const errorMsg = error.response?.data?.detail || error.message || '头像上传失败，请重试'
+    ElMessage.error(errorMsg)
+    loading?.close()
   }
 }
 
