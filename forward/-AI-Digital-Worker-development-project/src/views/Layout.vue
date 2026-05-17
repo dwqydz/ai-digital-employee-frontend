@@ -253,8 +253,14 @@ const menuRoutes = computed(() => {
 // ✅ 计算用户头像（优先显示上传的头像，否则显示首字母）
 const userAvatar = computed(() => {
   if (avatarUrl.value) {
-    // 如果已经是完整URL则直接使用，否则拼接后端地址
-    const url = avatarUrl.value.startsWith('http') ? avatarUrl.value : `http://localhost:8080${avatarUrl.value}`
+    // 如果已经是完整URL则直接使用
+    if (avatarUrl.value.startsWith('http')) {
+      return `${avatarUrl.value}?t=${Date.now()}`
+    }
+    
+    // 生产环境：直接硬编码后端地址（最快）
+    const baseUrl = 'https://langgraph-ai-digital-employee-production.up.railway.app'
+    const url = `${baseUrl}${avatarUrl.value}`
     return `${url}?t=${Date.now()}` // 加时间戳防止缓存
   }
   const name = currentUsername.value
@@ -340,6 +346,7 @@ const formatDate = (dateStr) => {
 
 // ✅ 处理头像上传
 const handleAvatarChange = async (file) => {
+  let loading = null
   try {
     // 校验文件大小 (2MB)
     const isLt2M = file.size / 1024 / 1024 < 2
@@ -350,7 +357,7 @@ const handleAvatarChange = async (file) => {
 
     console.log('[头像上传] 开始上传文件:', file.name, '大小:', file.size)
 
-    const loading = ElLoading.service({
+    loading = ElLoading.service({
       lock: true,
       text: '正在上传头像...',
       background: 'rgba(255, 255, 255, 0.7)',
@@ -368,13 +375,15 @@ const handleAvatarChange = async (file) => {
       console.error('[头像上传] 响应数据异常:', res)
       ElMessage.error('上传失败：响应数据异常')
     }
-    loading.close()
   } catch (error) {
     console.error('[头像上传] 失败:', error)
     console.error('[头像上传] 错误详情:', error.response?.data)
     const errorMsg = error.response?.data?.detail || error.message || '头像上传失败，请重试'
     ElMessage.error(errorMsg)
-    loading?.close()
+  } finally {
+    if (loading) {
+      loading.close()
+    }
   }
 }
 
