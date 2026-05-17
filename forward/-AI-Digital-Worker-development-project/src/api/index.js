@@ -13,6 +13,7 @@ const api = axios.create({
 // 🔥 针对不同接口设置不同的超时时间
 const TIMEOUT_CONFIG = {
   '/agent/chat': 60000,      // LLM对话：60s
+  '/upload': 60000,          // 文件上传：60s
   '/weather': 15000,         // 天气查询：15s
   '/default': 30000          // 默认：30s
 }
