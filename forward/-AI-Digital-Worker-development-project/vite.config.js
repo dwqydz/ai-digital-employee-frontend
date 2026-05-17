@@ -28,5 +28,15 @@ export default defineConfig({
   preview: {
     host: '0.0.0.0',
     port: process.env.PORT || 4173
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        // 使用内容hash确保文件更新时文件名改变
+        entryFileNames: 'assets/[name].[hash].js',
+        chunkFileNames: 'assets/[name].[hash].js',
+        assetFileNames: 'assets/[name].[hash].[ext]'
+      }
+    }
   }
 })
